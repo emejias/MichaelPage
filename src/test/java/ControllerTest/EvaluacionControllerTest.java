@@ -25,6 +25,13 @@ public class EvaluacionControllerTest {
 	// simulamos los valores devueltos por la consulta al servicio
 	private static final Evaluacion EVALUACION = new Evaluacion();
 
+	// devolvemos un objeto con el parametro de calificaciones incorrecto
+	private static final Evaluacion EVALUACION_ERROR_CAL = new Evaluacion();
+
+	// devolvemos un objeto con parametros invalidos
+	private static final Evaluacion EVALUACION_PARAM_INVALIDO = new Evaluacion();
+
+	// devolvemos un objeto vacio
 	private static final Evaluacion EVALUACION_NULL = null;
 
 	public static final String NOMBRE = "Eleazar";
@@ -36,7 +43,7 @@ public class EvaluacionControllerTest {
 	public static final String FECHA_UNO = "2020-12-01";
 	public static final String FECHA_DOS = "2020-12-10";
 
-	// este es el valor que se envia como parametro para el metodo que hace la
+	// este es el valor que se envia como parámetro para el método que hace la
 	// busqueda por ID
 	private static long ID = 2;
 	private static long ID_ERROR = 200;
@@ -57,7 +64,18 @@ public class EvaluacionControllerTest {
 		EVALUACION.setEmail(EMAIL);
 		EVALUACION.setCalificacion(CALIFICACION);
 
+		EVALUACION_ERROR_CAL.setNombre(NOMBRE);
+		EVALUACION_ERROR_CAL.setApellido(APELLIDO);
+		EVALUACION_ERROR_CAL.setEmail(EMAIL);
+		EVALUACION_ERROR_CAL.setCalificacion(CALIFICACION_ERROR);
+
+		EVALUACION_PARAM_INVALIDO.setApellido(APELLIDO);
+		EVALUACION_PARAM_INVALIDO.setEmail(EMAIL);
+		EVALUACION_PARAM_INVALIDO.setCalificacion(CALIFICACION);
+
 	}
+
+	// prueba para el método que lista todas las evaluaciones
 
 	@Test
 	public void listarEvaluacionesTest() {
@@ -73,7 +91,7 @@ public class EvaluacionControllerTest {
 
 	}
 
-	// prueba para el metodo que lista evaluaciones por ID
+	// prueba para el método que lista evaluaciones por ID
 
 	@Test
 	public void mostrarEvaluacionPorIDTest() {
@@ -89,6 +107,8 @@ public class EvaluacionControllerTest {
 
 	}
 
+	// prueba para el método que lista las evaluaciones con un ID invalido
+
 	@Test
 	public void mostrarEvaluacionPorIDNotFoundTest() {
 
@@ -101,6 +121,7 @@ public class EvaluacionControllerTest {
 
 	}
 
+	// prueba para el método que lista las evaluaciones por fecha
 	@Test
 	public void listarPorFechasTest() {
 
@@ -115,6 +136,8 @@ public class EvaluacionControllerTest {
 
 	}
 
+	// prueba para el método que lista evaluaciones con intervalo de fechas
+	// invalidos
 	@Test
 	public void listarPorFechasNotFoundTest() {
 
@@ -129,6 +152,8 @@ public class EvaluacionControllerTest {
 
 	}
 
+	// prueba para el método que registra evaluaciones
+
 	@Test
 	public void registrarEvaluacionTest() {
 
@@ -140,6 +165,33 @@ public class EvaluacionControllerTest {
 
 	}
 
+	// prueba para el método que registra evaluaciones con calificaciones invalidas
+
+	@Test
+	public void registrarEvaluacionCalificacionErrorTest() {
+
+		Mockito.when(evaluacionService.save(EVALUACION_ERROR_CAL)).thenReturn((EVALUACION_ERROR_CAL));
+
+		ResponseEntity<?> response = evaluacionRestController.registrarEvaluacion(EVALUACION_ERROR_CAL);
+
+		assertEquals(response.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+	}
+
+	// prueba para el método que registra evaluaciones con parametros invalidos
+
+	@Test
+	public void registrarEvaluacionParametrosInvalidosTest() {
+
+		Mockito.when(evaluacionService.save(EVALUACION_PARAM_INVALIDO)).thenReturn((null));
+
+		ResponseEntity<?> response = evaluacionRestController.registrarEvaluacion(EVALUACION_PARAM_INVALIDO);
+
+		assertEquals(response.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+	}
+
+	// prueba para el método que modifica evaluaciones por ID
 	@Test
 	public void modificarEvaluacionPorIDTest() {
 
@@ -152,12 +204,56 @@ public class EvaluacionControllerTest {
 
 	}
 
+	// prueba para el método que modifica evaluaciones con ID no válido
+
+	@Test
+	public void modificarEvaluacionPorIDNotFoundTest() {
+
+		Mockito.when(evaluacionService.findById(ID_ERROR)).thenReturn(null);
+
+		ResponseEntity<?> response = evaluacionRestController.modificarEvaluacionPorID(EVALUACION, ID_ERROR);
+
+		assertEquals(response.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+	}
+
+	// prueba para el método que modifica evaluaciones por ID con el objeto
+	// evaluaciones invalido
+
+	@Test
+	public void modificarEvaluacionPorIDErrorParamTest() {
+
+		Mockito.when(evaluacionService.findById(ID)).thenReturn(EVALUACION_PARAM_INVALIDO);
+		Mockito.when(evaluacionService.save(EVALUACION_PARAM_INVALIDO)).thenReturn((null));
+
+		ResponseEntity<?> response = evaluacionRestController.modificarEvaluacionPorID(EVALUACION_PARAM_INVALIDO, ID);
+
+		assertEquals(response.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+	}
+
+	// prueba para el método que elimina evaluaciones con por ID
 	@Test
 	public void eliminarEvaluacionPorIDTest() {
+
+		Mockito.when(evaluacionService.findById(ID)).thenReturn(EVALUACION);
 
 		ResponseEntity<?> response = evaluacionRestController.eliminarEvaluacionPorID(ID);
 
 		assertEquals(response.getStatusCode(), HttpStatus.ACCEPTED);
+
+	}
+
+	// prueba para el método que elimina evaluaciones con ID no valida
+
+	@Test
+	public void eliminarEvaluacionPorIDNotFoundTest() {
+
+		Mockito.when(evaluacionService.findById(ID_ERROR)).thenReturn(EVALUACION_NULL);
+
+		ResponseEntity<?> response = evaluacionRestController.eliminarEvaluacionPorID(ID_ERROR);
+
+		assertEquals(response.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
 
 	}
 

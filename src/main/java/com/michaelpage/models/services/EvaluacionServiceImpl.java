@@ -14,13 +14,6 @@ public class EvaluacionServiceImpl implements IEvaluacionService {
 	@Autowired
 	private IEvaluacionDao evaluacionDao;
 
-//	@Override
-//	@Transactional(readOnly = true)
-//	public List<Evaluacion> findAll() {
-//		// TODO Auto-generated method stub
-//		return (List<Evaluacion>) evaluacionDao.findAll();
-//	}
-
 	@Override
 	public List<Evaluacion> findAll() {
 		// TODO Auto-generated method stub

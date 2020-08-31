@@ -38,7 +38,6 @@ public class Evaluacion implements Serializable {
 
 	@ApiModelProperty(notes = "Apellido")
 	@NotEmpty
-	// @Column(nullable = true, unique = true)
 	private String apellido;
 
 	@ApiModelProperty(notes = "Email")
